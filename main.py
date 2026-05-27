@@ -4,15 +4,16 @@ import streamlit as st
 st.set_page_config(page_title="Vicky Data Solutions | Business Software Suite", layout="wide")
 
 # Line 7: Hide Default Streamlit Branding
+# Line 7: Fixed CSS to show the sidebar menu navigation icon cleanly
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            header {visibility: hidden;}
+            header {visibility: visible;} /* Changed from hidden to visible */
+            div[data-testid="stSidebarCollapse"] {visibility: visible !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-
 # Line 17: Hero Section (Company Branding)
 st.markdown("""
     <div style="text-align: center; padding: 40px 0;">
