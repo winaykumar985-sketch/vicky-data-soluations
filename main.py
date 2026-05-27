@@ -40,17 +40,15 @@ with col2:
     st.markdown("### 🔍 QR Attendance System")
     st.write("Contactless, secure workforce tracking using dynamic QR code generation, instant scan logging, and automated daily dashboard reporting.")
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Launch Attendance App", key="att_btn", use_container_width=True):
-        st.info("To open this module, select '2_Attendance' from the sidebar menu on the left.")
+    # REPLACE THE LINK BELOW WITH YOUR ACTUAL ATTENDANCE APP DEPLOYMENT URL TOMORROW
+    st.link_button("Launch Attendance Software 🌐", "https://your-attendance-app.streamlit.app", use_container_width=True)
 
 with col3:
     st.markdown("### 🏥 Hospital Management")
     st.write("Centralized healthcare administration portal for tracking doctor availability, patient check-ins, automated bed allocation, and billing.")
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Launch Hospital App", key="hosp_btn", use_container_width=True):
-        st.info("To open this module, select '3_Hospital' from the sidebar menu on the left.")
-
-st.write("---")
+    # REPLACE THE LINK BELOW WITH YOUR ACTUAL HOSPITAL APP DEPLOYMENT URL TOMORROW
+    st.link_button("Launch Hospital Software 🌐", "https://your-hospital-app.streamlit.app", use_container_width=True)
 
 # Line 57: Action / Lead Generation Section
 st.markdown("""
