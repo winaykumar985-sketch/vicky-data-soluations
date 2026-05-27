@@ -100,12 +100,12 @@ elif st.session_state.current_page == "Inventory":
             xl = pd.ExcelFile(uploaded_file)
             sheet_names = xl.sheet_names
             
-            # Safe Sheet Loading Logic
+            # Safe Sheet Loading Logic (FIXED: added .astype(str) to prevent float errors on Unnamed columns)
             stock_sheet = "Stock" if "Stock" in sheet_names else sheet_names[0]
             stock_df = pd.read_excel(uploaded_file, sheet_name=stock_sheet)
-            stock_df = stock_df.loc[:, ~stock_df.columns.str.contains('^Unnamed')]
+            stock_df = stock_df.loc[:, ~stock_df.columns.astype(str).str.contains('^Unnamed')]
             
-            # Safe Transaction Loading Logic (Prevents IndexError)
+            # Safe Transaction Loading Logic (FIXED: added .astype(str))
             tx_df = None
             if "tranction" in sheet_names:
                 tx_df = pd.read_excel(uploaded_file, sheet_name="tranction")
@@ -113,7 +113,7 @@ elif st.session_state.current_page == "Inventory":
                 tx_df = pd.read_excel(uploaded_file, sheet_name=sheet_names[1])
                 
             if tx_df is not None:
-                tx_df = tx_df.loc[:, ~tx_df.columns.str.contains('^Unnamed')]
+                tx_df = tx_df.loc[:, ~tx_df.columns.astype(str).str.contains('^Unnamed')]
             
             # Dashboard Calculations
             st.subheader("📊 Operational Analytics Dashboard")
