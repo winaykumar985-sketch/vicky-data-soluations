@@ -14,11 +14,11 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# Initialize a session state to track which page the user is looking at
+# Initialize a session state to track pages
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
 
-# Add a "Back to Home" button if the user is inside a software module
+# Add a "Back to Home" button if inside a module
 if st.session_state.current_page != "Home":
     if st.button("⬅️ Back to Main Suite"):
         st.session_state.current_page = "Home"
@@ -26,7 +26,6 @@ if st.session_state.current_page != "Home":
 
 # --- PAGE 1: HOME SUB-SUITE ---
 if st.session_state.current_page == "Home":
-    # Hero Section
     st.markdown("""
         <div style="text-align: center; padding: 40px 0;">
             <h1 style="color: #003366; font-size: 3em; margin-bottom: 10px;">Vicky Data Solutions</h1>
@@ -37,7 +36,6 @@ if st.session_state.current_page == "Home":
     st.write("---")
     st.markdown("<h2 style='text-align: center; color: #111; margin-bottom: 30px;'>Our Custom Software Deployments</h2>", unsafe_allow_html=True)
 
-    # Three-Column Layout for Your Real Projects
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -62,7 +60,6 @@ if st.session_state.current_page == "Home":
 
     st.write("---")
 
-    # Lead Generation Section
     st.markdown("""
         <div style="text-align: center; padding: 20px;">
             <h3 style='color: #222;'>Need a Custom Software Solution for Your Business?</h3>
@@ -81,7 +78,7 @@ if st.session_state.current_page == "Home":
         </div>
     """, unsafe_allow_html=True)
 
-# --- PAGE 2: INVENTORY SYSTEM (EMBEDDED DIRECTLY) ---
+# --- PAGE 2: INVENTORY SYSTEM (FIXED KEYERROR VERSION) ---
 elif st.session_state.current_page == "Inventory":
     st.markdown("""
         <div style="background-color: #003366; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
@@ -99,34 +96,49 @@ elif st.session_state.current_page == "Inventory":
 
     if uploaded_file is not None:
         try:
-            stock_df = pd.read_excel(uploaded_file, sheet_name="Stock")
-            tx_df = pd.read_excel(uploaded_file, sheet_name="tranction")
+            # Smart check to find the right sheet name regardless of spelling errors
+            xl = pd.ExcelFile(uploaded_file)
+            sheet_names = xl.sheet_names
+            
+            stock_sheet = "Stock" if "Stock" in sheet_names else sheet_names[0]
+            tx_sheet = "tranction" if "tranction" in sheet_names else (sheet_names[1] if len(sheet_names) > 1 else sheet_names[0])
+            
+            stock_df = pd.read_excel(uploaded_file, sheet_name=stock_sheet)
+            tx_df = pd.read_excel(uploaded_file, sheet_name=tx_sheet)
+            
+            # Drop empty columns
             stock_df = stock_df.loc[:, ~stock_df.columns.str.contains('^Unnamed')]
+            tx_df = tx_df.loc[:, ~tx_df.columns.str.contains('^Unnamed')]
             
             st.subheader("📊 Operational Analytics Dashboard")
             m1, m2, m3 = st.columns(3)
             
             total_products = len(stock_df)
-            out_of_stock = len(stock_df[stock_df['Current Stock'] == 0])
-            reorder_needed = len(stock_df[stock_df['stock status'] == 'need to buy'])
+            
+            # Safe checking for columns to prevent any KeyErrors
+            stock_col = 'Current Stock' if 'Current Stock' in stock_df.columns else stock_df.columns[4]
+            status_col = 'stock status' if 'stock status' in stock_df.columns else stock_df.columns[-1]
+            
+            out_of_stock = len(stock_df[stock_df[stock_col] == 0])
+            reorder_needed = len(stock_df[stock_df[status_col].astype(str).str.lower().str.contains('buy|out|no', na=False)])
             
             m1.metric("Total Tracked Items", total_products)
             m2.metric("Critical Out of Stock", out_of_stock, delta=f"-{out_of_stock} items" if out_of_stock > 0 else "0 items", delta_color="inverse")
-            m3.metric("Reorder Alerts Active", reorder_needed, delta=f"{reorder_needed} review required" if reorder_needed > 0 else "Clear", delta_color="inverse")
+            m3.metric("Reorder Alerts Active", reorder_needed, delta=f"{reorder_needed} required" if reorder_needed > 0 else "Clear", delta_color="inverse")
             
             tab1, tab2, tab3 = st.tabs(["🛒 Live Stock Registry", "🚨 Critical Reorder Alerts", "📜 Transaction History"])
             
             with tab1:
                 st.dataframe(stock_df, use_container_width=True)
             with tab2:
-                restock_items = stock_df[stock_df['stock status'] == 'need to buy']
+                restock_items = stock_df[stock_df[status_col].astype(str).str.lower().str.contains('buy|out|no', na=False)]
                 if not restock_items.empty:
-                    st.dataframe(restock_items[['Product Name', 'Category', 'Current Stock', 'Reorder Level', 'Supplier']], use_container_width=True)
+                    st.dataframe(restock_items, use_container_width=True)
                 else:
                     st.success("✅ All stock levels are currently stable.")
             with tab3:
                 st.dataframe(tx_df, use_container_width=True)
         except Exception as e:
-            st.error(f"❌ Error compiling spreadsheet data: {e}")
+            st.error(f"❌ Verification Error: {e}. Please ensure your Excel file layout matches your template columns.")
     else:
         st.warning("👋 Please upload your 'temp.xlsx' file above to access the automated dashboard features.")
