@@ -1,43 +1,30 @@
 import streamlit as st
 
 # 1. Professional Page Configuration
-st.set_page_config(page_title="Vicky Data Solutions | Business Software Suite", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Vicky Data Solutions | Business Software Suite", layout="wide")
 
-# 2. Modern UI Overrides (Forces sidebar to show up correctly and cleans the interface)
-st.markdown("""
-    <style>
-    /* Completely hide default Streamlit footer and deploy menus */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    /* Make sure the header bar and sidebar toggle icon are fully visible and clickable */
-    header {visibility: visible !important; background-color: transparent !important;}
-    div[data-testid="stSidebarCollapse"] {visibility: visible !important; display: block !important; left: 10px !important;}
-    
-    /* Clean up the native sidebar appearance to look premium */
-    section[data-testid="stSidebar"] {
-        background-color: #f8f9fa;
-        border-right: 1px solid #e0e0e0;
-    }
-    section[data-testid="stSidebar"] .stMarkdown h2 {
-        color: #003366 !important;
-        font-size: 1.2rem !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# 2. Hide Default Streamlit Branding
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # 3. Hero Section (Company Branding)
 st.markdown("""
     <div style="text-align: center; padding: 40px 0;">
-        <h1 style="color: #003366; font-size: 3em; margin-bottom: 10px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Vicky Data Solutions</h1>
-        <h3 style="color: #4a4a4a; font-weight: normal; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Enterprise-Grade Operational Software & Automation</h3>
+        <h1 style="color: #003366; font-size: 3em; margin-bottom: 10px;">Vicky Data Solutions</h1>
+        <h3 style="color: #4a4a4a; font-weight: normal;">Enterprise-Grade Operational Software & Automation</h3>
     </div>
 """, unsafe_allow_html=True)
 
 st.write("---")
 
 # 4. Software Showcase Section Title
-st.markdown("<h2 style='text-align: center; color: #111; margin-bottom: 30px; font-family: sans-serif;'>Our Custom Software Deployments</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; color: #111; margin-bottom: 30px;'>Our Custom Software Deployments</h2>", unsafe_allow_html=True)
 
 # 5. Three-Column Layout for Your Real Projects
 col1, col2, col3 = st.columns(3)
@@ -46,10 +33,8 @@ with col1:
     st.markdown("### 📦 Inventory Management")
     st.write("Real-time stock tracking, automated reorder level triggers, dynamic transaction logging, and professional tax invoice generation.")
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Clicking this button will now toggle an inline message right where they are looking
-    if st.button("Launch Inventory App", key="inv_btn", use_container_width=True):
-        st.warning("👈 Please look at the very top-left side of your screen. Click the small **'>' arrow icon** to open the sidebar panel and click on **1_Inventory**!")
+    # DIRECT LINK: This opens your inventory page directly in a new tab!
+    st.link_button("Launch Inventory App 🚀", "https://vicky-data-soluatations-clinic.streamlit.app/1_Inventory", use_container_width=True)
 
 with col2:
     st.markdown("### 🔍 QR Attendance System")
